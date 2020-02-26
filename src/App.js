@@ -1,17 +1,15 @@
-import React,  { useState, useEffect } from 'react';
+import React,  { useState, useEffect, useMemo, useCallback } from 'react';
 
 function App() {
-  const [tech, setTech] = useState([
-    'ReactJS',
-    'React Native'
-  ]);
+  const [tech, setTech] = useState([]);
 
   const [newTech, setNewTech] = useState('');
 
-  function handleAdd() {
+  /** useCallback impede que a função seja sempre recriada na memória ao ser executada */
+  const handleAdd = useCallback(() => {
     setTech([...tech, newTech]);
     setNewTech('')
-  }
+  }, [newTech, tech]);
 
   /** Este hook executa uma única vez / carrega as techs */
   useEffect(() => {
@@ -28,6 +26,8 @@ function App() {
     localStorage.setItem('tech', JSON.stringify(tech));
   }, [tech]);
 
+  /** Executa somente se a variável tech for alterada */
+  const techSize = useMemo(() => tech.length, [tech]);
 
   return (
     <>
@@ -37,6 +37,8 @@ function App() {
       )) }
 
     </ul>
+    <strong>Você tem {techSize} tecnologias </strong>
+    <br />
     <input type="text" value={newTech} onChange={e => setNewTech(e.target.value)} />
     <button type="button" onClick={handleAdd}>
       Adicionar
